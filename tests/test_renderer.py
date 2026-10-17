@@ -17,8 +17,8 @@ def test_output_is_a_pdf(master_cv: MasterCv) -> None:
     assert render_pdf(master_cv).startswith(b"%PDF")
 
 
-def test_sample_cv_fits_one_page(master_cv: MasterCv) -> None:
-    assert count_pages(render_pdf(master_cv)) == 1
+def test_sample_cv_fits_two_pages(master_cv: MasterCv) -> None:
+    assert count_pages(render_pdf(master_cv)) <= 2
 
 
 def test_special_characters_render_literally(master_cv: MasterCv) -> None:
@@ -33,8 +33,8 @@ def test_special_characters_render_literally(master_cv: MasterCv) -> None:
 def test_contact_and_immutable_fields_are_rendered(master_cv: MasterCv) -> None:
     text = extract_text(render_pdf(master_cv))
     assert master_cv.contact.name in text
-    assert master_cv.experience[0].company in text
-    assert master_cv.education[0].institution in text
+    assert master_cv.experience[0].company.upper() in text
+    assert master_cv.education[0].institution.upper() in text
 
 
 def test_long_content_produces_more_than_one_page(master_cv: MasterCv) -> None:

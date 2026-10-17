@@ -11,6 +11,7 @@ class FrozenModel(BaseModel):
 
 class Contact(FrozenModel):
     name: str
+    headline: str = ""
     email: str
     phone: str
     location: str
@@ -30,7 +31,7 @@ class Entry(FrozenModel):
 class ExperienceEntry(Entry):
     company: str
     role: str
-    location: str
+    location: str = ""
     start: str
     end: str
 
@@ -46,6 +47,7 @@ class EducationEntry(FrozenModel):
     degree: str
     start: str
     end: str
+    bullets: list[str] = Field(default_factory=list)
 
 
 class MasterCv(FrozenModel):
@@ -53,9 +55,11 @@ class MasterCv(FrozenModel):
     summary: str
     skills: list[SkillGroup]
     experience: list[ExperienceEntry]
+    internships: list[ExperienceEntry] = Field(default_factory=list)
     projects: list[ProjectEntry]
     education: list[EducationEntry]
     certifications: list[str]
+    languages: list[str] = Field(default_factory=list)
 
 
 def load_master_cv(inline_json: str | None, path: Path) -> MasterCv:

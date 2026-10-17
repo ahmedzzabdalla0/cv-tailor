@@ -1,6 +1,7 @@
 from functools import cache
 from importlib.resources import files
 from io import BytesIO
+from pathlib import Path
 
 import typst
 from pypdf import PdfReader
@@ -8,11 +9,14 @@ from pypdf import PdfReader
 from cv_tailor.errors import RenderingError
 from cv_tailor.models.master_cv import MasterCv
 
+FONTS_DIR = Path(__file__).resolve().parent / "fonts"
+
 
 def render_pdf(cv: MasterCv) -> bytes:
     try:
         output = typst.compile(
             _read_template(),
+            font_paths=[FONTS_DIR],
             ignore_system_fonts=True,
             sys_inputs={"cv": cv.model_dump_json()},
         )

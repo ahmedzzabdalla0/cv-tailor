@@ -1,6 +1,6 @@
 # cv-tailor
 
-Tailors one master CV (JSON) to one or more job postings. For every job it produces a one-page, ATS-friendly PDF with identical formatting, then delivers it as local files, as a Telegram reply, or both.
+Tailors one master CV (JSON) to one or more job postings. For every job it produces an ATS-friendly PDF with identical formatting, then delivers it as local files, as a Telegram reply, or both.
 
 The AI may only rephrase, reorder, and select existing content: the summary, skill items inside their groups, experience bullets, and the selection, order, and bullets of projects. Contact details, companies, roles, dates, project names, education, and certifications are always rendered straight from the master CV and never sent to the model. A deterministic guard rejects any tailored output that invents skills, ids, or numbers.
 
@@ -41,7 +41,7 @@ Exit code is `0` only when every job succeeded, otherwise `1`. Successful jobs a
 
 ## Input formats
 
-Master CV: `contact` (`name`, `email`, `phone`, `location`, `links`), `summary`, `skills` (`[{group, items}]`), `experience` and `projects` (each with a stable string `id` and `bullets`), `education`, `certifications`. See `data/master_cv.example.json`.
+Master CV: `contact` (`name`, `email`, `phone`, `location`, `links`), `summary`, `skills` (`[{group, items}]`), `experience`, `internships` and `projects` (each with a stable string `id` and `bullets`), `education` (optional `bullets`), `certifications`, `languages`. An experience entry with an empty `location` renders as `ROLE` over `COMPANY | dates`. See `data/master_cv.example.json`.
 
 Jobs: a JSON list of `{job_id, title, company, description, url?, score?, telegram_message_id?}`. `job_id` may contain only letters, digits, `_`, `-`, and `.` (it becomes a file name) and must not start with a dot. Duplicate ids are dropped and descriptions are truncated to `MAX_DESCRIPTION_CHARS`. See `data/jobs.example.json`.
 

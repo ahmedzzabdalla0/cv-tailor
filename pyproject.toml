@@ -12,7 +12,7 @@ requires-python = ">=3.12"
 where = ["src"]
 
 [tool.setuptools.package-data]
-cv_tailor = ["rendering/templates/*.typ"]
+cv_tailor = ["rendering/templates/*.typ", "rendering/fonts/*"]
 
 [tool.ruff]
 line-length = 100
