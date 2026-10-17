@@ -1,0 +1,18 @@
+[
+  {
+    "job_id": "example-backend-001",
+    "title": "Senior Backend Engineer",
+    "company": "Initech",
+    "description": "We are hiring a backend engineer to build payment APIs in Python. Experience with FastAPI, PostgreSQL, Redis and message queues is required. You will own reliability and performance of core services.",
+    "url": "https://jobs.example.com/initech/senior-backend-engineer",
+    "score": 0.87,
+    "telegram_message_id": 1001
+  },
+  {
+    "job_id": "example-fullstack-002",
+    "title": "Full-Stack Developer",
+    "company": "Umbrella Travel",
+    "description": "Join our booking platform team. You will build React and TypeScript interfaces and NestJS services that integrate with airline and hotel suppliers. CI/CD and Docker experience is a plus.",
+    "url": "https://jobs.example.com/umbrella/full-stack-developer"
+  }
+]

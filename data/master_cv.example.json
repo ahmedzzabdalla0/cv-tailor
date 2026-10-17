@@ -1,0 +1,94 @@
+{
+  "contact": {
+    "name": "Jordan Rivera",
+    "email": "jordan.rivera@example.com",
+    "phone": "+1 555 010 0199",
+    "location": "Springfield, USA",
+    "links": ["github.com/jordan-rivera-example", "linkedin.com/in/jordan-rivera-example"]
+  },
+  "summary": "Backend-leaning full-stack engineer with 5 years of experience building payment and booking platforms. Focused on reliable APIs, clear interfaces, and measurable performance improvements.",
+  "skills": [
+    {"group": "Languages", "items": ["Python", "TypeScript", "SQL", "Go"]},
+    {"group": "Frameworks", "items": ["FastAPI", "React", "Next.js", "NestJS"]},
+    {"group": "Infrastructure", "items": ["Docker", "PostgreSQL", "Redis", "RabbitMQ", "GitHub Actions"]}
+  ],
+  "experience": [
+    {
+      "id": "exp-acme",
+      "company": "Acme Payments",
+      "role": "Backend Engineer",
+      "location": "Remote",
+      "start": "Feb 2023",
+      "end": "Present",
+      "bullets": [
+        "Built a payment reconciliation service that processes 1,200,000 transactions per month with 99.9% accuracy.",
+        "Reduced API p95 latency from 480 ms to 190 ms by introducing Redis caching.",
+        "Led a team of 4 engineers through a migration to event-driven processing with RabbitMQ."
+      ]
+    },
+    {
+      "id": "exp-globex",
+      "company": "Globex Travel",
+      "role": "Full-Stack Developer",
+      "location": "Cairo, Egypt",
+      "start": "Jun 2021",
+      "end": "Jan 2023",
+      "bullets": [
+        "Developed a booking dashboard in React and TypeScript used by 35 travel agents daily.",
+        "Integrated 6 supplier APIs behind a single NestJS gateway with automated retries.",
+        "Automated deployments with Docker and CI pipelines, cutting release time by 60%."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-ledger",
+      "name": "Open Ledger",
+      "link": "github.com/jordan-rivera-example/open-ledger",
+      "tech": ["Python", "FastAPI", "PostgreSQL"],
+      "bullets": [
+        "Designed a double-entry ledger API with idempotent writes and audit trails.",
+        "Covered the core domain with 150 automated tests."
+      ]
+    },
+    {
+      "id": "proj-itinerary",
+      "name": "Itinerary Planner",
+      "link": "github.com/jordan-rivera-example/itinerary-planner",
+      "tech": ["Next.js", "TypeScript"],
+      "bullets": [
+        "Built a trip planning app with drag-and-drop scheduling and offline support.",
+        "Shipped server-side rendering that improved first load time by 40%."
+      ]
+    },
+    {
+      "id": "proj-notes",
+      "name": "Notes Sync",
+      "link": null,
+      "tech": ["Go", "Redis"],
+      "bullets": [
+        "Implemented a conflict-free note synchronization service for 3 client platforms.",
+        "Published the protocol specification and a reference client."
+      ]
+    },
+    {
+      "id": "proj-cli",
+      "name": "Release Notes CLI",
+      "link": "github.com/jordan-rivera-example/release-notes",
+      "tech": ["Python"],
+      "bullets": [
+        "Created a command line tool that drafts release notes from merged pull requests.",
+        "Adopted by 12 open source repositories."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Example University",
+      "degree": "BSc Computer Engineering",
+      "start": "2017",
+      "end": "2021"
+    }
+  ],
+  "certifications": ["Example Cloud Practitioner Certification"]
+}
