@@ -8,6 +8,7 @@ import requests
 from pydantic import BaseModel, ValidationError
 
 from cv_tailor.delivery.base import Deliverable
+from cv_tailor.delivery.filenames import build_filename
 from cv_tailor.errors import DeliveryError
 from cv_tailor.models.job import Job
 
@@ -17,8 +18,9 @@ API_ROOT = "https://api.telegram.org"
 CAPTION_LIMIT = 1024
 MESSAGE_LIMIT = 4096
 REASON_LIMIT = 200
+DESCRIPTION_SEPARATOR = "\n\n"
+ELLIPSIS = "..."
 RATE_LIMIT_STATUS = 429
-UNSAFE_FILENAME_CHARS = re.compile(r"[^A-Za-z0-9_.-]+")
 UNSAFE_REASON_CHARS = re.compile(r"[^A-Za-z0-9 .,:;@()/-]")
 
 
@@ -31,16 +33,24 @@ class TelegramError(BaseModel):
     parameters: RetryParameters = RetryParameters()
 
 
-def build_filename(contact_name: str, company: str) -> str:
-    return f"{_sanitize_part(contact_name)}_CV_{_sanitize_part(company)}.pdf"
-
-
 def build_caption(job: Job, warnings: list[str]) -> str:
     return "\n".join([f"{job.title} @ {job.company}", *warnings])[:CAPTION_LIMIT]
 
 
-def _sanitize_part(text: str) -> str:
-    return UNSAFE_FILENAME_CHARS.sub("_", text).strip("_")
+def build_standalone_caption(job: Job, warnings: list[str]) -> str:
+    header_lines = [f"{job.title} @ {job.company}"]
+    if job.score is not None:
+        header_lines.append(f"Score: {job.score:g}%")
+    if job.url:
+        header_lines.append(f"Link: {job.url}")
+    header = "\n".join([*header_lines, *warnings])
+    remaining = CAPTION_LIMIT - len(header) - len(DESCRIPTION_SEPARATOR)
+    description = " ".join(job.description.split())
+    if remaining <= len(ELLIPSIS) or not description:
+        return header[:CAPTION_LIMIT]
+    if len(description) > remaining:
+        description = description[: remaining - len(ELLIPSIS)].rstrip() + ELLIPSIS
+    return f"{header}{DESCRIPTION_SEPARATOR}{description}"
 
 
 class TelegramChannel:
@@ -58,24 +68,45 @@ class TelegramChannel:
 
     def deliver_success(self, deliverable: Deliverable) -> None:
         job = deliverable.job
-        filename = build_filename(deliverable.contact_name, job.company)
-        data = {**self._base_data(job), "caption": build_caption(job, deliverable.warnings)}
+        filename = build_filename(deliverable.contact_name)
         files = {"document": (filename, deliverable.pdf, "application/pdf")}
-        self._post("sendDocument", data, files)
-        logger.info("sent %s to telegram", job.job_id)
+        replied = self._deliver(
+            "sendDocument",
+            job,
+            reply_fields={"caption": build_caption(job, deliverable.warnings)},
+            standalone_fields={"caption": build_standalone_caption(job, deliverable.warnings)},
+            files=files,
+        )
+        logger.info("sent %s to telegram %s", job.job_id, "as a reply" if replied else "standalone")
 
     def deliver_failure(self, job: Job, reason: str) -> None:
         safe_reason = UNSAFE_REASON_CHARS.sub("", reason)[:REASON_LIMIT]
         text = f"Could not tailor a CV for {job.title} @ {job.company}: {safe_reason}"
-        self._post("sendMessage", {**self._base_data(job), "text": text[:MESSAGE_LIMIT]}, None)
+        fields = {"text": text[:MESSAGE_LIMIT]}
+        self._deliver("sendMessage", job, reply_fields=fields, standalone_fields=fields, files=None)
 
-    def _base_data(self, job: Job) -> dict[str, str]:
-        data = {"chat_id": self._chat_id}
+    def _deliver(
+        self,
+        method: str,
+        job: Job,
+        reply_fields: dict[str, str],
+        standalone_fields: dict[str, str],
+        files: dict[str, tuple[str, bytes, str]] | None,
+    ) -> bool:
         if job.telegram_message_id is not None:
-            data["reply_parameters"] = json.dumps(
-                {"message_id": job.telegram_message_id, "allow_sending_without_reply": True}
-            )
-        return data
+            reply_data = {
+                "chat_id": self._chat_id,
+                **reply_fields,
+                "reply_parameters": json.dumps({"message_id": job.telegram_message_id}),
+            }
+            try:
+                self._post(method, reply_data, files)
+            except DeliveryError as error:
+                logger.warning("reply for %s failed, sending standalone: %s", job.job_id, error)
+            else:
+                return True
+        self._post(method, {"chat_id": self._chat_id, **standalone_fields}, files)
+        return False
 
     def _post(
         self,

@@ -69,7 +69,11 @@ Empty variables are treated as unset.
 
 ## Telegram behavior
 
-The PDF is sent with `sendDocument`, as a reply to the job's `telegram_message_id` when present. The file is named `{contact name}_CV_{company}.pdf` with every character outside `[A-Za-z0-9_.-]` replaced. The caption is `{title} @ {company}` followed by warnings, capped at 1024 characters. A CV that spills onto a second page is still delivered, with a warning in the caption. A failed job gets a short text reply with a fixed, sanitized reason. Bot tokens, CV content, and job descriptions are never logged.
+The PDF is sent with `sendDocument` as a reply to the job's `telegram_message_id` (the message the JobHunt bot stored in Upstash), with `{title} @ {company}` and any warnings as the caption (capped at 1024 characters).
+
+If the reply cannot be made (no message id, message deleted or not found, invalid id, a Telegram error, or a network error), the same PDF is sent again as a standalone document whose caption carries the job details: title and company, score, link, any warnings, and as much of the description as fits in 1024 characters. If that standalone send also fails, the job is reported as failed. An invalid `telegram_message_id` in the jobs input (zero, negative, non-numeric) is treated as missing and never fails the run.
+
+The file is always named `{first name}_{last name}_Resume.pdf`, taken from `contact.name` (middle names are dropped, every character outside `[A-Za-z0-9_.-]` is replaced), for example `Ahmed_Abdelsalam_Resume.pdf`. A CV that spills onto a second page is still delivered, with a warning in the caption. A failed job gets a short text reply with a fixed, sanitized reason, falling back to a plain message the same way. Bot tokens, CV content, and job descriptions are never logged.
 
 ## Tests and checks
 

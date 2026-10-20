@@ -46,3 +46,28 @@ def test_error_message_does_not_echo_input_values() -> None:
     with pytest.raises(ConfigurationError) as caught:
         parse_jobs(json.dumps([{"job_id": 5, "description": secret}]), 100)
     assert secret not in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        (42, 42),
+        ("42", 42),
+        (" 42 ", 42),
+        (42.0, 42),
+        (None, None),
+        (0, None),
+        (-5, None),
+        ("abc", None),
+        ("", None),
+        (4.5, None),
+        (True, None),
+        ([1], None),
+        ({"id": 1}, None),
+    ],
+)
+def test_invalid_telegram_message_id_is_ignored_instead_of_failing_the_run(
+    raw_value: object, expected: int | None
+) -> None:
+    jobs = parse_jobs(raw_jobs({**job_dict("a"), "telegram_message_id": raw_value}), 100)
+    assert jobs[0].telegram_message_id == expected
