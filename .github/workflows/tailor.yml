@@ -1,0 +1,62 @@
+name: tailor-cv
+
+on:
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: "JSON list of jobs, or gz:<base64url>"
+        required: true
+      delivery:
+        description: "telegram | local | both"
+        required: false
+        default: telegram
+
+concurrency:
+  group: tailor-cv
+  cancel-in-progress: false
+
+jobs:
+  tailor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: |
+          pip install -r requirements.txt
+          pip install -e . --no-deps
+
+      - name: Decode jobs
+        env:
+          JOBS_INPUT: ${{ inputs.jobs }}
+        run: |
+          python - <<'PY'
+          import base64, gzip, os, pathlib
+          raw = os.environ["JOBS_INPUT"].strip()
+          if raw.startswith("gz:"):
+              b = raw[3:]
+              b += "=" * (-len(b) % 4)
+              raw = gzip.decompress(base64.urlsafe_b64decode(b)).decode()
+          pathlib.Path(os.environ["RUNNER_TEMP"], "jobs.json").write_text(raw, encoding="utf-8")
+          PY
+
+      - name: Run
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          MASTER_CV_JSON: ${{ secrets.MASTER_CV_JSON }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DELIVERY: ${{ inputs.delivery }}
+        run: python -m cv_tailor --jobs-file "$RUNNER_TEMP/jobs.json"
+
+      - uses: actions/upload-artifact@v4
+        if: always() && inputs.delivery != 'telegram'
+        with:
+          name: cvs
+          path: out/

@@ -1,18 +1,11 @@
 [
   {
-    "job_id": "example-backend-001",
-    "title": "Senior Backend Engineer",
-    "company": "Initech",
-    "description": "We are hiring a backend engineer to build payment APIs in Python. Experience with FastAPI, PostgreSQL, Redis and message queues is required. You will own reliability and performance of core services.",
-    "url": "https://jobs.example.com/initech/senior-backend-engineer",
-    "score": 0.87,
-    "telegram_message_id": 1001
-  },
-  {
-    "job_id": "example-fullstack-002",
-    "title": "Full-Stack Developer",
-    "company": "Umbrella Travel",
-    "description": "Join our booking platform team. You will build React and TypeScript interfaces and NestJS services that integrate with airline and hotel suppliers. CI/CD and Docker experience is a plus.",
-    "url": "https://jobs.example.com/umbrella/full-stack-developer"
+    "job_id": "yo-ai-labs-4479947683",
+    "title": "Sr. Full-Stack Software Engineer - Remote",
+    "company": "YO AI Labs",
+    "description": "Seeking an experienced Full-Stack Software Engineer for a remote contractor role (15 hrs/week) to support an AI training project. Responsibilities include developing and debugging full-stack applications, reviewing AI-generated code, and solving complex problems across languages like Python, React, Node.js, TypeScript, Java, Rust, and Go.",
+    "url": "https://eg.linkedin.com/jobs/view/sr-full-stack-software-engineer-remote-at-yo-ai-labs-4479947683",
+    "score": 0.85,
+    "telegram_message_id": null
   }
 ]
